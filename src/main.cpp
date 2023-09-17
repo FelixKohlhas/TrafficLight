@@ -46,6 +46,16 @@ void setup() {
   f = EEPROM.read(0x00);
 
   WiFi.mode(WIFI_STA);
+
+  // Disable WiFi sleep
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
+
+  // Use static IP (Remove this block to use DHCP)
+  IPAddress ip(192, 168, 16, 99);
+  IPAddress gateway(192, 168, 16, 1);
+  IPAddress subnet(255, 255, 255, 0);
+  wifiManager.setSTAStaticIPConfig(ip, gateway, subnet);
+
   wifiManager.autoConnect(auto_ssid, auto_pass);
 
   server.on("/", handleRoot);
