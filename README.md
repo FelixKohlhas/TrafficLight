@@ -8,7 +8,12 @@
 
 </div>
 
-This repository contains the code and 3d print files to build a WiFi-controlled traffic light.
+> This repository contains the code and 3D design files to build a WiFi-controlled traffic light. 
+> For more information, please read my [blog post](https://felixkohlhas.com/projects/trafficlight/) about this project.
+
+[Code](./src/main.cpp)
+
+[3D Design](./3d-files/)
 
 Hardware:
 - 2 WS2812 Rings (8 LEDs each)
