@@ -15,6 +15,8 @@
 #define NUMPIXELS 16
 #define RINGSIZE   8
 
+#define BUZZER     0
+
 WiFiManager wifiManager;
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB);
 WiFiClient wifiClient;
@@ -27,6 +29,9 @@ void handleRoot();
 
 void setup() {
   Serial.begin(9600);
+
+  pinMode(BUZZER, OUTPUT);
+  digitalWrite(BUZZER, HIGH);
 
   pixels.begin();
   for(int i = 0; i < NUMPIXELS; i++) {
@@ -64,6 +69,9 @@ void setup() {
 
 // Current state: 0 = red; 1 = green
 int state = 1;
+
+// Beep duration (0=off)
+int beep = 0;
 
 // Last state change (milliseconds since boot)
 unsigned long last_change = 0;
@@ -104,13 +112,19 @@ void loop() {
         pixels.setPixelColor(i + RINGSIZE - (RINGSIZE * f), pixels.Color(0, c, 0));
       }
       pixels.show();
+
+      if (beep != 0) {
+        // Beep twice
+        if (elapsed / beep == 0 || elapsed / beep == 2) digitalWrite(BUZZER, LOW);
+        else digitalWrite(BUZZER, HIGH);
+      }
     }
   }
   delay(10);
 }
 
 void handleRoot() {
-  // http://<ip>/?i=10000&b=255&d=50&f=0
+  // http://<ip>/?i=10000&b=255&d=50&f=0&beep=80
   if (server.hasArg("i")) i = server.arg("i").toInt();
   if (server.hasArg("b")) pixels.setBrightness(server.arg("b").toInt());
   if (server.hasArg("d")) d = server.arg("d").toInt();
@@ -120,6 +134,7 @@ void handleRoot() {
     EEPROM.put(0x00, f);
     EEPROM.commit();
   }
+  if (server.hasArg("beep")) beep = server.arg("beep").toInt();
 
   state = 1;
   last_change = millis();
